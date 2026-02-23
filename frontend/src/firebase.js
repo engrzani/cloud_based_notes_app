@@ -19,7 +19,9 @@ export const auth = getAuth(app)
 setPersistence(auth, browserLocalPersistence).catch((error) => {
   console.error('Auth persistence error:', error)
 })
-export const db = getFirestore(app)
+
+// Connect to the 'mydb' database instead of default
+export const db = getFirestore(app, 'mydb')
 
 export const googleProvider = new GoogleAuthProvider()
 
