@@ -12,6 +12,7 @@ export default function NoteModal({ note, onUpdate, onDelete, onClose, labels })
   const [showLabelPicker, setShowLabelPicker] = useState(false)
   const [showReminderPicker, setShowReminderPicker] = useState(false)
   const [noteLabels, setNoteLabels] = useState(note.labels || [])
+  const [customDateTime, setCustomDateTime] = useState('')
   const overlayRef = useRef(null)
 
   useEffect(() => {
@@ -219,7 +220,9 @@ export default function NoteModal({ note, onUpdate, onDelete, onClose, labels })
               <label>Pick date & time</label>
               <input
                 type="datetime-local"
+                value={customDateTime}
                 onChange={(e) => {
+                  setCustomDateTime(e.target.value)
                   if (e.target.value) {
                     handleSetReminder(new Date(e.target.value).toISOString())
                   }

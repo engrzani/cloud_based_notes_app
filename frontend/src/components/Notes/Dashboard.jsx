@@ -45,60 +45,33 @@ export default function Dashboard() {
     localStorage.setItem(`labels-${currentUser.uid}`, JSON.stringify(newLabels))
   }
 
-  // Real-time notes listener with retry logic for token refresh issues
+  // Real-time notes listener
   useEffect(() => {
     if (!currentUser) return
 
-    let unsubscribe = null
-    let retryCount = 0
-    const maxRetries = 3
+    const notesQuery = query(
+      collection(db, 'notes'),
+      where('userId', '==', currentUser.uid),
+      orderBy('updatedAt', 'desc')
+    )
 
-    function setupListener() {
-      const notesQuery = query(
-        collection(db, 'notes'),
-        where('userId', '==', currentUser.uid),
-        orderBy('updatedAt', 'desc')
-      )
-
-      unsubscribe = onSnapshot(notesQuery, (snapshot) => {
+    const unsubscribe = onSnapshot(
+      notesQuery,
+      (snapshot) => {
         const notesData = snapshot.docs.map((d) => ({
           id: d.id,
           ...d.data()
         }))
         setNotes(notesData)
         setLoading(false)
-        retryCount = 0 // Reset retry count on success
-      }, (error) => {
+      },
+      (error) => {
         console.error('Error fetching notes:', error)
-        
-        // Handle permission-denied or unauthenticated errors by retrying
-        if ((error.code === 'permission-denied' || error.code === 'unauthenticated') && retryCount < maxRetries) {
-          retryCount++
-          console.log(`Retrying Firestore connection (attempt ${retryCount}/${maxRetries})...`)
-          
-          // Force token refresh and retry after a delay
-          if (currentUser) {
-            currentUser.getIdToken(true).then(() => {
-              setTimeout(() => {
-                if (unsubscribe) unsubscribe()
-                setupListener()
-              }, 1000 * retryCount) // Exponential backoff
-            }).catch((tokenError) => {
-              console.error('Token refresh failed:', tokenError)
-              setLoading(false)
-            })
-          }
-        } else {
-          setLoading(false)
-        }
-      })
-    }
+        setLoading(false)
+      }
+    )
 
-    setupListener()
-
-    return () => {
-      if (unsubscribe) unsubscribe()
-    }
+    return () => unsubscribe()
   }, [currentUser])
 
   async function handleAddNote({ title, content, pinned, color, image }) {

@@ -10,6 +10,7 @@ export default function NoteCard({ note, onUpdate, onDelete, onClick, activeView
   const [showColors, setShowColors] = useState(false)
   const [showLabels, setShowLabels] = useState(false)
   const [showReminderPicker, setShowReminderPicker] = useState(false)
+  const [customDateTime, setCustomDateTime] = useState('')
 
   function handlePin(e) {
     e.stopPropagation()
@@ -233,7 +234,9 @@ export default function NoteCard({ note, onUpdate, onDelete, onClick, activeView
             <label>Pick date & time</label>
             <input
               type="datetime-local"
+              value={customDateTime}
               onChange={(e) => {
+                setCustomDateTime(e.target.value)
                 if (e.target.value) {
                   handleSetReminder(new Date(e.target.value).toISOString())
                 }
