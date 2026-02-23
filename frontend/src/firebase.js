@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider, OAuthProvider } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider, OAuthProvider, browserLocalPersistence, setPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -14,6 +14,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
+
+// Set explicit persistence to keep user logged in across browser sessions
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error('Auth persistence error:', error)
+})
 export const db = getFirestore(app)
 
 export const googleProvider = new GoogleAuthProvider()

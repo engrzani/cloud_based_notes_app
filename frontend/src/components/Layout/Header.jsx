@@ -1,11 +1,26 @@
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
-import { FiSearch, FiMenu, FiGrid, FiList, FiRefreshCw } from 'react-icons/fi'
+import { FiSearch, FiMenu, FiGrid, FiList, FiRefreshCw, FiLogOut } from 'react-icons/fi'
 import './Header.css'
 
 export default function Header({ searchTerm, onSearchChange, viewMode, onViewModeToggle, onMenuToggle }) {
   const { currentUser, logout } = useAuth()
   const navigate = useNavigate()
+  const [showAccountMenu, setShowAccountMenu] = useState(false)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowAccountMenu(false)
+      }
+    }
+    if (showAccountMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showAccountMenu])
 
   async function handleLogout() {
     try {
@@ -58,15 +73,43 @@ export default function Header({ searchTerm, onSearchChange, viewMode, onViewMod
         </button>
 
         {currentUser && (
-          <div className="keep-user-menu">
-            <img
-              src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName || 'U'}&background=667eea&color=fff&size=80`}
-              alt="avatar"
-              className="keep-user-avatar"
-              referrerPolicy="no-referrer"
-              onClick={handleLogout}
-              title={`${currentUser.displayName || currentUser.email}\nClick to sign out`}
-            />
+          <div className="keep-user-menu" ref={menuRef}>
+            <button
+              className="keep-user-avatar-btn"
+              onClick={() => setShowAccountMenu(!showAccountMenu)}
+              title="Google Account"
+            >
+              <img
+                src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName || 'U'}&background=667eea&color=fff&size=80`}
+                alt="avatar"
+                className="keep-user-avatar"
+                referrerPolicy="no-referrer"
+              />
+            </button>
+
+            {showAccountMenu && (
+              <div className="keep-account-dropdown">
+                <div className="keep-account-header">
+                  <img
+                    src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName || 'U'}&background=667eea&color=fff&size=120`}
+                    alt="avatar"
+                    className="keep-account-avatar"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="keep-account-info">
+                    <h3>{currentUser.displayName || 'User'}</h3>
+                    <p>{currentUser.email}</p>
+                  </div>
+                </div>
+
+                <div className="keep-account-actions">
+                  <button className="keep-account-action-btn" onClick={handleLogout}>
+                    <FiLogOut size={18} />
+                    <span>Sign out</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

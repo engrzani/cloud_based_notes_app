@@ -29,12 +29,34 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Force token refresh to ensure we have a valid token
+        try {
+          await user.getIdToken(true)
+        } catch (error) {
+          console.error('Token refresh error:', error)
+        }
+      }
       setCurrentUser(user)
       setLoading(false)
     })
     return unsubscribe
   }, [])
+
+  // Refresh token when user returns to the app (visibility change)
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible' && currentUser) {
+        currentUser.getIdToken(true).catch((error) => {
+          console.error('Token refresh on visibility change failed:', error)
+        })
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [currentUser])
 
   const value = {
     currentUser,

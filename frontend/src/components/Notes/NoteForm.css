@@ -166,3 +166,60 @@
 .keep-color-dot.active {
   border-color: #202124;
 }
+
+/* Collapsed form icon buttons */
+.keep-collapsed-icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.keep-collapsed-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Image preview in form */
+.keep-form-image-preview {
+  position: relative;
+  width: 100%;
+  max-height: 200px;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+}
+
+.keep-form-image-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.keep-form-image-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.keep-form-image-remove:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
