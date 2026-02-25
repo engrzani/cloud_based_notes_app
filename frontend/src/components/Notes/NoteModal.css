@@ -323,3 +323,20 @@
   font-size: 14px;
   font-family: inherit;
 }
+.keep-modal-reminder-picker .keep-reminder-save-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.keep-modal-reminder-picker .keep-reminder-save-btn:hover {
+  background: #1765cc;
+}

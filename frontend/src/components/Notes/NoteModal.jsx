@@ -221,13 +221,19 @@ export default function NoteModal({ note, onUpdate, onDelete, onClose, labels })
               <input
                 type="datetime-local"
                 value={customDateTime}
-                onChange={(e) => {
-                  setCustomDateTime(e.target.value)
-                  if (e.target.value) {
-                    handleSetReminder(new Date(e.target.value).toISOString())
-                  }
-                }}
+                onChange={(e) => setCustomDateTime(e.target.value)}
               />
+              {customDateTime && (
+                <button
+                  className="keep-reminder-save-btn"
+                  onClick={() => {
+                    handleSetReminder(new Date(customDateTime).toISOString())
+                    setCustomDateTime('')
+                  }}
+                >
+                  Save
+                </button>
+              )}
             </div>
           </div>
         )}
