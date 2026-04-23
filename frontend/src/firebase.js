@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider, OAuthProvider, browserLocalPersistence, setPersistence } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider, browserLocalPersistence, setPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,14 +21,12 @@ setPersistence(auth, browserLocalPersistence).catch((error) => {
   console.error('Auth persistence error:', error)
 })
 
-// Connect to the 'mydb' database instead of default
+// Connect to the 'mydb' database
 export const db = getFirestore(app, 'mydb')
 
-export const googleProvider = new GoogleAuthProvider()
+// Initialize Firebase Storage
+export const storage = getStorage(app)
 
-export const microsoftProvider = new OAuthProvider('microsoft.com')
-microsoftProvider.setCustomParameters({
-  prompt: 'select_account'
-})
+export const googleProvider = new GoogleAuthProvider()
 
 export default app

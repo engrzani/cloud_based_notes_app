@@ -36,7 +36,8 @@ export default function NoteForm({ onAdd }) {
         content: content.trim(),
         pinned,
         color,
-        image: imagePreview
+        imageFile: image,
+        imagePreview: imagePreview
       })
     }
     resetForm()

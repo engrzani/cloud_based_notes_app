@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow users to upload images to their own notes folder
+    match /notes/{userId}/{imageId} {
+      // Allow read if user is authenticated
+      allow read: if request.auth != null;
+      
+      // Allow write (upload/update) only to the user's own folder
+      // and only if the file is an image and less than 5MB
+      allow write: if request.auth != null
+                   && request.auth.uid == userId
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+      
+      // Allow delete only from the user's own folder
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

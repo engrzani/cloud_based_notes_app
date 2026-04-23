@@ -4,7 +4,7 @@ import {
   signOut,
   onAuthStateChanged
 } from 'firebase/auth'
-import { auth, googleProvider, microsoftProvider } from '../firebase'
+import { auth, googleProvider } from '../firebase'
 
 const AuthContext = createContext()
 
@@ -18,10 +18,6 @@ export function AuthProvider({ children }) {
 
   function loginWithGoogle() {
     return signInWithPopup(auth, googleProvider)
-  }
-
-  function loginWithMicrosoft() {
-    return signInWithPopup(auth, microsoftProvider)
   }
 
   function logout() {
@@ -41,7 +37,6 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     loginWithGoogle,
-    loginWithMicrosoft,
     logout,
     loading
   }

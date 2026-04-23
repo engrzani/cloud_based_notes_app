@@ -1,9 +1,8 @@
-import { FiFileText, FiBell, FiEdit, FiArchive, FiTrash2, FiTag } from 'react-icons/fi'
+import { FiFileText, FiEdit, FiArchive, FiTrash2, FiTag } from 'react-icons/fi'
 import './Sidebar.css'
 
 const NAV_ITEMS = [
   { id: 'notes', label: 'Notes', icon: FiFileText },
-  { id: 'reminders', label: 'Reminders', icon: FiBell },
 ]
 
 const BOTTOM_ITEMS = [

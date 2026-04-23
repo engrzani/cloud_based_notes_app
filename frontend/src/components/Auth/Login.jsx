@@ -2,11 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { FcGoogle } from 'react-icons/fc'
-import { BsMicrosoft } from 'react-icons/bs'
 import './Login.css'
 
 export default function Login() {
-  const { loginWithGoogle, loginWithMicrosoft, currentUser } = useAuth()
+  const { loginWithGoogle, currentUser } = useAuth()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -24,20 +23,6 @@ export default function Login() {
       navigate('/dashboard')
     } catch (err) {
       setError('Failed to sign in with Google. Please try again.')
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleMicrosoftLogin() {
-    try {
-      setError('')
-      setLoading(true)
-      await loginWithMicrosoft()
-      navigate('/dashboard')
-    } catch (err) {
-      setError('Failed to sign in with Microsoft. Please try again.')
       console.error(err)
     } finally {
       setLoading(false)
@@ -68,15 +53,6 @@ export default function Login() {
           >
             <FcGoogle size={22} />
             <span>Sign in with Google</span>
-          </button>
-
-          <button
-            className="login-btn microsoft-btn"
-            onClick={handleMicrosoftLogin}
-            disabled={loading}
-          >
-            <BsMicrosoft size={20} color="#00a4ef" />
-            <span>Sign in with Microsoft</span>
           </button>
         </div>
 

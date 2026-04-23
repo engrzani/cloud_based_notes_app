@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FiEdit2, FiTrash2, FiArchive, FiTag, FiCheck, FiBell, FiX } from 'react-icons/fi'
+import { FiEdit2, FiTrash2, FiArchive, FiTag, FiCheck } from 'react-icons/fi'
 import { IoColorPaletteOutline } from 'react-icons/io5'
 import { BsPin, BsPinFill, BsArchive } from 'react-icons/bs'
 import { MdOutlineUnarchive } from 'react-icons/md'
@@ -9,8 +9,6 @@ import './NoteCard.css'
 export default function NoteCard({ note, onUpdate, onDelete, onClick, activeView }) {
   const [showColors, setShowColors] = useState(false)
   const [showLabels, setShowLabels] = useState(false)
-  const [showReminderPicker, setShowReminderPicker] = useState(false)
-  const [customDateTime, setCustomDateTime] = useState('')
 
   function handlePin(e) {
     e.stopPropagation()
@@ -43,36 +41,6 @@ export default function NoteCard({ note, onUpdate, onDelete, onClick, activeView
   function handleColorChange(color) {
     onUpdate(note.id, { color })
     setShowColors(false)
-  }
-
-  function handleSetReminder(reminderDate) {
-    onUpdate(note.id, { reminder: reminderDate })
-    setShowReminderPicker(false)
-  }
-
-  function handleRemoveReminder(e) {
-    e.stopPropagation()
-    onUpdate(note.id, { reminder: null })
-  }
-
-  function formatReminderDate(reminder) {
-    if (!reminder) return ''
-    const date = new Date(reminder)
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    const reminderDay = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    
-    const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-    
-    if (reminderDay.getTime() === today.getTime()) {
-      return `Today, ${timeStr}`
-    } else if (reminderDay.getTime() === tomorrow.getTime()) {
-      return `Tomorrow, ${timeStr}`
-    } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + `, ${timeStr}`
-    }
   }
 
   function formatDate(timestamp) {
@@ -128,17 +96,6 @@ export default function NoteCard({ note, onUpdate, onDelete, onClick, activeView
         </div>
       )}
 
-      {/* Reminder badge */}
-      {note.reminder && (
-        <div className="keep-card-reminder" onClick={(e) => e.stopPropagation()}>
-          <FiBell size={12} />
-          <span>{formatReminderDate(note.reminder)}</span>
-          <button className="keep-reminder-remove" onClick={handleRemoveReminder} title="Remove reminder">
-            <FiX size={12} />
-          </button>
-        </div>
-      )}
-
       {/* Footer with date */}
       <span className="keep-card-date">{formatDate(note.updatedAt)}</span>
 
@@ -155,10 +112,7 @@ export default function NoteCard({ note, onUpdate, onDelete, onClick, activeView
           </>
         ) : (
           <>
-            <button className="keep-card-tool" onClick={(e) => { e.stopPropagation(); setShowReminderPicker(!showReminderPicker); setShowColors(false) }} title="Remind me">
-              <FiBell size={16} />
-            </button>
-            <button className="keep-card-tool" onClick={(e) => { e.stopPropagation(); setShowColors(!showColors); setShowReminderPicker(false) }} title="Background options">
+            <button className="keep-card-tool" onClick={(e) => { e.stopPropagation(); setShowColors(!showColors) }} title="Background options">
               <IoColorPaletteOutline size={16} />
             </button>
             <button className="keep-card-tool" onClick={handleArchive} title={note.archived ? 'Unarchive' : 'Archive'}>
@@ -188,69 +142,6 @@ export default function NoteCard({ note, onUpdate, onDelete, onClick, activeView
         </div>
       )}
 
-      {/* Reminder picker popup */}
-      {showReminderPicker && (
-        <div className="keep-card-reminder-picker" onClick={(e) => e.stopPropagation()}>
-          <p className="keep-reminder-picker-title">Remind me</p>
-          <button 
-            className="keep-reminder-option"
-            onClick={() => {
-              const today = new Date()
-              today.setHours(20, 0, 0, 0)
-              handleSetReminder(today.toISOString())
-            }}
-          >
-            <FiBell size={16} />
-            <span>Later today</span>
-            <span className="keep-reminder-time">8:00 PM</span>
-          </button>
-          <button 
-            className="keep-reminder-option"
-            onClick={() => {
-              const tomorrow = new Date()
-              tomorrow.setDate(tomorrow.getDate() + 1)
-              tomorrow.setHours(8, 0, 0, 0)
-              handleSetReminder(tomorrow.toISOString())
-            }}
-          >
-            <FiBell size={16} />
-            <span>Tomorrow</span>
-            <span className="keep-reminder-time">8:00 AM</span>
-          </button>
-          <button 
-            className="keep-reminder-option"
-            onClick={() => {
-              const nextWeek = new Date()
-              nextWeek.setDate(nextWeek.getDate() + 7)
-              nextWeek.setHours(8, 0, 0, 0)
-              handleSetReminder(nextWeek.toISOString())
-            }}
-          >
-            <FiBell size={16} />
-            <span>Next week</span>
-            <span className="keep-reminder-time">Mon, 8:00 AM</span>
-          </button>
-          <div className="keep-reminder-custom">
-            <label>Pick date & time</label>
-            <input
-              type="datetime-local"
-              value={customDateTime}
-              onChange={(e) => setCustomDateTime(e.target.value)}
-            />
-            {customDateTime && (
-              <button
-                className="keep-reminder-save-btn"
-                onClick={() => {
-                  handleSetReminder(new Date(customDateTime).toISOString())
-                  setCustomDateTime('')
-                }}
-              >
-                Save
-              </button>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

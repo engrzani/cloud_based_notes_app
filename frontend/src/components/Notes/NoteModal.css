@@ -25,6 +25,7 @@
   width: 100%;
   max-height: 250px;
   overflow: hidden;
+  position: relative;
 }
 
 .keep-modal-image img {
@@ -33,6 +34,28 @@
   max-height: 250px;
   object-fit: cover;
   display: block;
+}
+
+.keep-modal-image-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.keep-modal-image-remove:hover {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .keep-modal-header {

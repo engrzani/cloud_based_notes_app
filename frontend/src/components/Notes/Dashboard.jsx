@@ -11,7 +11,8 @@ import {
   onSnapshot,
   serverTimestamp
 } from 'firebase/firestore'
-import { db } from '../../firebase'
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
+import { db, storage } from '../../firebase'
 import { useAuth } from '../../contexts/AuthContext'
 import Header from '../Layout/Header'
 import Sidebar from '../Layout/Sidebar'
@@ -27,7 +28,7 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState('grid')
-  const [sidebarExpanded, setSidebarExpanded] = useState(false)
+  const [sidebarExpanded, setSidebarExpanded] = useState(true)
   const [activeView, setActiveView] = useState('notes')
   const [selectedNote, setSelectedNote] = useState(null)
   const [showEditLabels, setShowEditLabels] = useState(false)
@@ -74,8 +75,17 @@ export default function Dashboard() {
     return () => unsubscribe()
   }, [currentUser])
 
-  async function handleAddNote({ title, content, pinned, color, image }) {
+  async function handleAddNote({ title, content, pinned, color, imageFile, imagePreview }) {
     try {
+      let imageUrl = null
+      
+      // Upload image to Firebase Storage if present
+      if (imageFile) {
+        const imageRef = ref(storage, `notes/${currentUser.uid}/${Date.now()}_${imageFile.name}`)
+        await uploadBytes(imageRef, imageFile)
+        imageUrl = await getDownloadURL(imageRef)
+      }
+      
       await addDoc(collection(db, 'notes'), {
         title,
         content,
@@ -84,13 +94,14 @@ export default function Dashboard() {
         archived: false,
         trashed: false,
         labels: [],
-        image: image || null,
+        image: imageUrl,
         userId: currentUser.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       })
     } catch (error) {
       console.error('Error adding note:', error)
+      alert('Failed to add note. Please try again.')
     }
   }
 
@@ -136,9 +147,6 @@ export default function Dashboard() {
       case 'trash':
         filtered = filtered.filter((n) => n.trashed)
         break
-      case 'reminders':
-        filtered = filtered.filter((n) => !n.archived && !n.trashed && n.reminder)
-        break
       default:
         if (activeView.startsWith('label-')) {
           const label = activeView.replace('label-', '')
@@ -166,7 +174,6 @@ export default function Dashboard() {
   function getViewTitle() {
     switch (activeView) {
       case 'notes': return ''
-      case 'reminders': return 'Reminders'
       case 'archive': return 'Archive'
       case 'trash': return 'Trash'
       default:
@@ -178,7 +185,6 @@ export default function Dashboard() {
   function getEmptyMessage() {
     switch (activeView) {
       case 'notes': return { icon: '📝', title: 'Notes you add appear here' }
-      case 'reminders': return { icon: '🔔', title: 'Notes with reminders appear here' }
       case 'archive': return { icon: '📦', title: 'Your archived notes appear here' }
       case 'trash': return { icon: '🗑️', title: 'No notes in Trash' }
       default: return { icon: '🏷️', title: 'No notes with this label yet' }
@@ -198,7 +204,7 @@ export default function Dashboard() {
       <Sidebar
         expanded={sidebarExpanded}
         activeView={activeView}
-        onViewChange={(view) => { setActiveView(view); setSidebarExpanded(false) }}
+        onViewChange={(view) => { setActiveView(view) }}
         labels={labels}
         onEditLabels={() => setShowEditLabels(true)}
       />
@@ -275,6 +281,7 @@ export default function Dashboard() {
           onDelete={handleDeleteNote}
           onClose={() => setSelectedNote(null)}
           labels={labels}
+          currentUser={currentUser}
         />
       )}
 
