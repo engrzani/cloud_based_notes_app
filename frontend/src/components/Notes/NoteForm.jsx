@@ -29,6 +29,25 @@ export default function NoteForm({ onAdd }) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [expanded, title, content, pinned, color, image])
 
+  function handleAdd() {
+    if (!title.trim() && !content.trim()) return
+    onAdd({
+      title: title.trim(),
+      content: content.trim(),
+      pinned,
+      color,
+      imageFile: image,
+      imagePreview: imagePreview
+    })
+    setTitle('')
+    setContent('')
+    setPinned(false)
+    setColor('#ffffff')
+    setShowColors(false)
+    setImage(null)
+    setImagePreview(null)
+  }
+
   function handleClose() {
     if (title.trim() || content.trim()) {
       onAdd({
@@ -178,9 +197,14 @@ export default function NoteForm({ onAdd }) {
             style={{ display: 'none' }}
           />
         </div>
-        <button className="keep-form-close-btn" onClick={handleClose}>
-          Close
-        </button>
+        <div className="keep-form-action-btns">
+          <button className="keep-form-add-btn" onClick={handleAdd}>
+            Add
+          </button>
+          <button className="keep-form-close-btn" onClick={handleClose}>
+            Save
+          </button>
+        </div>
       </div>
 
       {showColors && (

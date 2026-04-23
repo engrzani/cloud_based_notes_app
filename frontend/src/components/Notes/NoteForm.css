@@ -121,6 +121,27 @@
   background: rgba(0, 0, 0, 0.06);
 }
 
+.keep-form-action-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.keep-form-add-btn {
+  padding: 8px 24px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #202124;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.keep-form-add-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
 .keep-form-close-btn {
   padding: 8px 24px;
   border: none;
